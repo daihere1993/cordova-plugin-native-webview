@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-native-webview" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>cordova-plugin-native-webview</name>
+    <js-module name="cordova-plugin-native-webview" src="www/cordova-plugin-native-webview.js">
+        <clobbers target="NativeWebView" />
+    </js-module>
+
+    <platform name="ios">
+        <config-file parent="/*" target="config.xml">
+            <feature name="CDVNativeWebView">
+                <param name="ios-package" value="CDVNativeWebView" />
+            </feature>
+        </config-file>
+
+        <!-- Plugin source code --> 
+        <header-file src="src/ios/CDVNativeWebView.h" />
+        <source-file src="src/ios/CDVNativeWebView.m" />
+
+        <framework src="ionicons" type="podspec" spec="~>2.1.1"/>
+    </platform>    
+</plugin>
