@@ -38,19 +38,19 @@ static UIColor *iconButtonColor;
     _dismissAnimation = [DismissAnimation new];
     _swapTransition = [SwapeRightInteractiveTransition new];
     
-    NSString *navBarColor_string = [self settingForKey:@"navBarColor"];
+    NSString *navBarColor_string = [self settingForKey:@"NativeWebViewNavBarColor"];
     if (navBarColor_string) {
         navBarColor = [self getColorByHexString:navBarColor_string];
     } else {
         progressBarColor = [UIColor blueColor];
     }
-    NSString *progressBarColor_string = [self settingForKey:@"progressBarColor"];
+    NSString *progressBarColor_string = [self settingForKey:@"NativeWebViewProgressBarColor"];
     if (progressBarColor_string) {
         progressBarColor = [self getColorByHexString:progressBarColor_string];
     } else {
         progressBarColor = [UIColor blueColor];
     }
-    NSString *iconButtonColor_string = [self settingForKey:@"iconButtonColor"];
+    NSString *iconButtonColor_string = [self settingForKey:@"NativeWebViewIconButtonColor"];
     if (iconButtonColor_string) {
         iconButtonColor = [self getColorByHexString:iconButtonColor_string];
     } else {
