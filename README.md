@@ -50,6 +50,6 @@ cordova plugin add https://github.com/daihere1993/cordova-plugin-native-webview
 
 * The Android version is still on the road.
 
-# LICENSE
+## LICENSE
 
 [MIT LICENSE](http://opensource.org/licenses/MIT)
