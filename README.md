@@ -27,7 +27,13 @@ This plugin is awesome.
 
 ## Useage
 
-1. Set some color in config.xml.
+1. Add plugin to your project.
+
+```bash
+cordova plugin add https://github.com/daihere1993/cordova-plugin-native-webview
+```
+
+2. Set some color in config.xml.
 
 ```xml
 <preference name="NativeWebViewNavBarColor" value="#ffffff" />
@@ -35,4 +41,9 @@ This plugin is awesome.
 <preference name="NativeWebViewIconButtonColor" value="#000" />
 ```
 
-2. Invoke ``NativeWebView.oepn(url)`` in js.
+3. Invoke ``NativeWebView.oepn(url)`` in js.
+
+
+# LICENSE
+
+[MIT LICENSE](http://opensource.org/licenses/MIT)
