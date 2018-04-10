@@ -18,6 +18,8 @@ If you want open a webview that in cordova app.
 
 This plugin is awesome.
 
+![image](https://github.com/daihere1993/cordova-plugin-native-webview/blob/master/doc/demo.gif)
+
 ## Feature
 
 * Nice navigationbar
