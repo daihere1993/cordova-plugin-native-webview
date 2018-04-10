@@ -44,6 +44,10 @@ cordova plugin add https://github.com/daihere1993/cordova-plugin-native-webview
 3. Invoke ``NativeWebView.oepn(url)`` in js.
 
 
+## Tips
+
+* The Android version is still on the road.
+
 # LICENSE
 
 [MIT LICENSE](http://opensource.org/licenses/MIT)
