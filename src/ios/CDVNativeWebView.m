@@ -42,7 +42,7 @@ static UIColor *iconButtonColor;
     if (navBarColor_string) {
         navBarColor = [self getColorByHexString:navBarColor_string];
     } else {
-        progressBarColor = [UIColor blueColor];
+        navBarColor = [UIColor whiteColor];
     }
     NSString *progressBarColor_string = [self settingForKey:@"NativeWebViewProgressBarColor"];
     if (progressBarColor_string) {
@@ -122,13 +122,15 @@ static UIColor *iconButtonColor;
 - (void)createViews {
     // 1. Create WKWebView and add progress observer
     self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds];
-    self.webView.frame = CGRectMake(0, 64, CGRectGetWidth(self.view.frame),CGRectGetHeight(self.view.frame));
+    self.webView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame),CGRectGetHeight(self.view.frame) - 64.0);
     self.webView.navigationDelegate = self;
+    self.hidesBottomBarWhenPushed = YES;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:(NSKeyValueObservingOptionNew) context:nil];
     [self.view addSubview:self.webView];
     
     // 2. Create progressBar and progressLayer
-    UIView *progress = [[UIView alloc] initWithFrame:CGRectMake(0, 64, CGRectGetWidth(self.view.frame), 3)];
+    UIView *progress = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 3)];
     [self.view addSubview:progress];
     self.progressLayer = [CALayer layer];
     self.progressLayer.frame = CGRectMake(0, 0, 0, 3);
@@ -202,6 +204,17 @@ static UIColor *iconButtonColor;
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     self.navigationItem.title = self.webView.title;
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    
+    NSString *urlStr = [navigationAction.request.URL.absoluteString stringByRemovingPercentEncoding];
+    if ([urlStr containsString:@"alipay://"] || [urlStr containsString:@"weixin://"]) {
+        [[UIApplication sharedApplication] openURL:navigationAction.request.URL options:@{} completionHandler:^(BOOL success) {
+        }];
+    }
+    
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end
