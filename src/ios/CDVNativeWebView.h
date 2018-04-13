@@ -11,7 +11,7 @@
 @end
 
 @interface CDVNativeWebViewController : UIViewController <WKNavigationDelegate>
-- (id)initWithArgs:(NSString *)url options:(NSDictionary *)options;
+- (id)initWithUrl:(NSString *)url  navBarColor:(NSString *)navBarColor progressBarColor:(NSString *)progressBarColor iconButtonColor:(NSString *)iconButtonColor;
 @end
 
 @interface PersentAnimation : NSObject <UIViewControllerAnimatedTransitioning>

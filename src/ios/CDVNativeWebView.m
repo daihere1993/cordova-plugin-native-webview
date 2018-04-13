@@ -7,11 +7,10 @@
 #import "CDVNativeWebView.h"
 #import <ionicons.h>
 
-static UIColor *navBarColor;
-static UIColor *progressBarColor;
-static UIColor *iconButtonColor;
-
 @interface CDVNativeWebView()
+@property (nonatomic, strong) NSString *navBarColor;
+@property (nonatomic, strong) NSString *progressBarColor;
+@property (nonatomic, strong) NSString *iconButtonColor;
 @property (nonatomic, strong) PersentAnimation *persentAnimation;
 @property (nonatomic, strong) DismissAnimation *dismissAnimation;
 @property (nonatomic, strong) SwapeRightInteractiveTransition *swapTransition;
@@ -24,45 +23,20 @@ static UIColor *iconButtonColor;
     return [self.commandDelegate.settings objectForKey:[key lowercaseString]];
 }
 
-- (UIColor *)getColorByHexString:(NSString *)hexString {
-    unsigned int rgbValue = 0;
-    NSScanner *scanner = [[NSScanner alloc] initWithString:hexString];
-    [scanner setScanLocation:1];
-    [scanner scanHexInt:&rgbValue];
-    
-    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
-}
-
 - (void)pluginInitialize {
     _persentAnimation = [PersentAnimation new];
     _dismissAnimation = [DismissAnimation new];
     _swapTransition = [SwapeRightInteractiveTransition new];
     
-    NSString *navBarColor_string = [self settingForKey:@"NativeWebViewNavBarColor"];
-    if (navBarColor_string) {
-        navBarColor = [self getColorByHexString:navBarColor_string];
-    } else {
-        navBarColor = [UIColor whiteColor];
-    }
-    NSString *progressBarColor_string = [self settingForKey:@"NativeWebViewProgressBarColor"];
-    if (progressBarColor_string) {
-        progressBarColor = [self getColorByHexString:progressBarColor_string];
-    } else {
-        progressBarColor = [UIColor blueColor];
-    }
-    NSString *iconButtonColor_string = [self settingForKey:@"NativeWebViewIconButtonColor"];
-    if (iconButtonColor_string) {
-        iconButtonColor = [self getColorByHexString:iconButtonColor_string];
-    } else {
-        iconButtonColor = [UIColor blueColor];
-    }
+    _navBarColor = [self settingForKey:@"NativeWebViewNavBarColor"];
+    _progressBarColor = [self settingForKey:@"NativeWebViewProgressBarColor"];
+    _iconButtonColor = [self settingForKey:@"NativeWebViewIconButtonColor"];
 }
 
 - (void)open:(CDVInvokedUrlCommand *)command {
     NSString *url = [command argumentAtIndex:0];
-    NSDictionary *options = [command argumentAtIndex:1];
     
-    CDVNativeWebViewController *nwVC = [[CDVNativeWebViewController alloc] initWithArgs:url options:options];
+    CDVNativeWebViewController *nwVC = [[CDVNativeWebViewController alloc] initWithUrl:url navBarColor:self.navBarColor progressBarColor:self.progressBarColor iconButtonColor:self.iconButtonColor];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:nwVC];
     nav.transitioningDelegate = self;
     // Add gesture
@@ -99,6 +73,10 @@ static UIColor *iconButtonColor;
 
 
 @interface CDVNativeWebViewController()
+@property (nonatomic, strong) UIColor *navBarColor;
+@property (nonatomic, strong) UIColor *progressBarColor;
+@property (nonatomic, strong) UIColor *iconButtonColor;
+
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) CALayer *progressLayer;
@@ -108,10 +86,14 @@ static UIColor *iconButtonColor;
 
 @implementation CDVNativeWebViewController
 
-- (id)initWithArgs:(NSString *)url options:(NSDictionary *)options {
+- (id)initWithUrl:(NSString *)url navBarColor:(NSString *)navBarColor progressBarColor:(NSString *)progressBarColor iconButtonColor:(NSString *)iconButtonColor {
     self = [super init];
     
     if (self != nil) {
+        _navBarColor = navBarColor? [self getColorByHexString:navBarColor] : [UIColor whiteColor];
+        _progressBarColor = progressBarColor? [self getColorByHexString:progressBarColor] : [UIColor blueColor];
+        _iconButtonColor = iconButtonColor? [self getColorByHexString:iconButtonColor] : [UIColor blueColor];
+        
         _url = [NSURL URLWithString:url];
         [self createViews];
     }
@@ -134,14 +116,14 @@ static UIColor *iconButtonColor;
     [self.view addSubview:progress];
     self.progressLayer = [CALayer layer];
     self.progressLayer.frame = CGRectMake(0, 0, 0, 3);
-    self.progressLayer.backgroundColor = progressBarColor.CGColor;
+    self.progressLayer.backgroundColor = self.progressBarColor.CGColor;
     [progress.layer addSublayer:self.progressLayer];
     
     // 3. Create close and back button
-    UIImage *backIcon = [IonIcons imageWithIcon:ion_ios_arrow_back size:30.0f color:iconButtonColor];
+    UIImage *backIcon = [IonIcons imageWithIcon:ion_ios_arrow_back size:30.0f color:self.iconButtonColor];
     self.backButton = [[UIBarButtonItem alloc] initWithImage:backIcon style:UIBarButtonItemStyleDone target:self action:@selector(goBack)];
     [self.backButton setImageInsets:UIEdgeInsetsMake(0, 0, 0, 15)];
-    UIImage *closeIcon = [IonIcons imageWithIcon:ion_android_close size:30.0f color:iconButtonColor];
+    UIImage *closeIcon = [IonIcons imageWithIcon:ion_android_close size:30.0f color:self.iconButtonColor];
     self.closeButton = [[UIBarButtonItem alloc] initWithImage:closeIcon style:UIBarButtonItemStylePlain target:self action:@selector(close)];
     // Reduce items space
     [self.closeButton setImageInsets:UIEdgeInsetsMake(0, 0, 0, 45)];
@@ -150,7 +132,9 @@ static UIColor *iconButtonColor;
     fixedSpaceButton.width = 20;
     
     self.navigationItem.rightBarButtonItems = @[fixedSpaceButton, fixedSpaceButton];
-    [[UINavigationBar appearance] setBarTintColor:navBarColor];
+
+    [[UINavigationBar appearance] setBarTintColor:self.navBarColor];
+    [[UINavigationBar appearance] setTranslucent:NO];
     
     // 4. Load url
     [self.webView loadRequest:[NSURLRequest requestWithURL:self.url]];
@@ -171,6 +155,15 @@ static UIColor *iconButtonColor;
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+- (UIColor *)getColorByHexString:(NSString *)hexString {
+    unsigned int rgbValue = 0;
+    NSScanner *scanner = [[NSScanner alloc] initWithString:hexString];
+    [scanner setScanLocation:1];
+    [scanner scanHexInt:&rgbValue];
+    
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
 - (void)goBack {
