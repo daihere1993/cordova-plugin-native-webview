@@ -14,7 +14,7 @@ Now, [cordova-plugin-native-webview](https://github.com/daihere1993/cordova-plug
 
 ## Purpose
 
-If you want open a webview that in cordova app. 
+If you want open a webview in your cordova app. 
 
 This plugin is awesome.
 
