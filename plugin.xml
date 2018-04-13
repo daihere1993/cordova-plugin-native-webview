@@ -12,10 +12,38 @@
             </feature>
         </config-file>
 
-        <!-- Plugin source code --> 
+        <!-- Plugin source code -->
         <header-file src="src/ios/CDVNativeWebView.h" />
         <source-file src="src/ios/CDVNativeWebView.m" />
 
         <framework src="ionicons" type="podspec" spec="~>2.1.1"/>
-    </platform>    
+    </platform>
+
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="CDVNativeWebView">
+                <param name="android-package" value="nativewebview.NativeWebView"/>
+            </feature>
+        </config-file>
+
+        <!-- Plugin source code -->
+        <source-file src="src/android/NativeWebView.java" target-dir="src/nativewebview" />
+        <source-file src="src/android/NativeWebViewDialog.java" target-dir="src/nativewebview" />
+        <source-file src="src/android/NativeWebViewChromeClient.java" target-dir="src/nativewebview" />
+        <!--  drawable src/android/resources -->
+        <resource-file src="src/android/res/drawable-hdpi/arrow_left.png" target="res/drawable-hdpi/arrow_left.png" />
+        <resource-file src="src/android/res/drawable-mdpi/arrow_left.png" target="res/drawable-mdpi/arrow_left.png" />
+        <resource-file src="src/android/res/drawable-xhdpi/arrow_left.png" target="res/drawable-xhdpi/arrow_left.png" />
+        <resource-file src="src/android/res/drawable-xxhdpi/arrow_left.png" target="res/drawable-xxhdpi/arrow_left.png" />
+
+        <resource-file src="src/android/res/drawable-hdpi/close_round.png" target="res/drawable-hdpi/close_round.png" />
+        <resource-file src="src/android/res/drawable-mdpi/close_round.png" target="res/drawable-mdpi/close_round.png" />
+        <resource-file src="src/android/res/drawable-xhdpi/close_round.png" target="res/drawable-xhdpi/close_round.png" />
+        <resource-file src="src/android/res/drawable-xxhdpi/close_round.png" target="res/drawable-xxhdpi/close_round.png" />
+
+        <resource-file src="src/android/res/drawable/progress_bar_states.xml" target="res/drawable/progress_bar_states.xml"/>
+        <resource-file src="src/android/res/anim/translate_in.xml" target="res/anim/translate_in.xml" />
+        <resource-file src="src/android/res/anim/translate_out.xml" target="res/anim/translate_out.xml" />
+        <resource-file src="src/android/res/values/styles.xml" target="res/values/styles.xml" />
+    </platform>
 </plugin>
