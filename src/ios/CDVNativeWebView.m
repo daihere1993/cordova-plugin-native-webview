@@ -27,7 +27,7 @@
     _persentAnimation = [PersentAnimation new];
     _dismissAnimation = [DismissAnimation new];
     _swapTransition = [SwapeRightInteractiveTransition new];
-    
+
     _navBarColor = [self settingForKey:@"NativeWebViewNavBarColor"];
     _progressBarColor = [self settingForKey:@"NativeWebViewProgressBarColor"];
     _iconButtonColor = [self settingForKey:@"NativeWebViewIconButtonColor"];
@@ -35,13 +35,13 @@
 
 - (void)open:(CDVInvokedUrlCommand *)command {
     NSString *url = [command argumentAtIndex:0];
-    
+
     CDVNativeWebViewController *nwVC = [[CDVNativeWebViewController alloc] initWithUrl:url navBarColor:self.navBarColor progressBarColor:self.progressBarColor iconButtonColor:self.iconButtonColor];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:nwVC];
     nav.transitioningDelegate = self;
     // Add gesture
     [self.swapTransition wireToViewController:nav];
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
         CGRect frame = [[UIScreen mainScreen] bounds];
         UIWindow *tmpWindow = [[UIWindow alloc] initWithFrame:frame];
@@ -93,11 +93,14 @@
         _navBarColor = navBarColor? [self getColorByHexString:navBarColor] : [UIColor whiteColor];
         _progressBarColor = progressBarColor? [self getColorByHexString:progressBarColor] : [UIColor blueColor];
         _iconButtonColor = iconButtonColor? [self getColorByHexString:iconButtonColor] : [UIColor blueColor];
-        
-        _url = [NSURL URLWithString:url];
+
+        NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@"`%^{}\"[]|\\<>"].invertedSet;
+        NSString *stringURL = [url stringByAddingPercentEncodingWithAllowedCharacters:characterSet];
+        _url = [NSURL URLWithString:stringURL];
+
         [self createViews];
     }
-    
+
     return self;
 }
 
@@ -110,7 +113,7 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:(NSKeyValueObservingOptionNew) context:nil];
     [self.view addSubview:self.webView];
-    
+
     // 2. Create progressBar and progressLayer
     UIView *progress = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 3)];
     [self.view addSubview:progress];
@@ -118,7 +121,7 @@
     self.progressLayer.frame = CGRectMake(0, 0, 0, 3);
     self.progressLayer.backgroundColor = self.progressBarColor.CGColor;
     [progress.layer addSublayer:self.progressLayer];
-    
+
     // 3. Create close and back button
     UIImage *backIcon = [IonIcons imageWithIcon:ion_ios_arrow_back size:30.0f color:self.iconButtonColor];
     self.backButton = [[UIBarButtonItem alloc] initWithImage:backIcon style:UIBarButtonItemStyleDone target:self action:@selector(goBack)];
@@ -130,12 +133,12 @@
     self.navigationItem.leftBarButtonItem = self.backButton;
     UIBarButtonItem *fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     fixedSpaceButton.width = 20;
-    
+
     self.navigationItem.rightBarButtonItems = @[fixedSpaceButton, fixedSpaceButton];
 
     [[UINavigationBar appearance] setBarTintColor:self.navBarColor];
     [[UINavigationBar appearance] setTranslucent:NO];
-    
+
     // 4. Load url
     [self.webView loadRequest:[NSURLRequest requestWithURL:self.url]];
 }
@@ -162,7 +165,7 @@
     NSScanner *scanner = [[NSScanner alloc] initWithString:hexString];
     [scanner setScanLocation:1];
     [scanner scanHexInt:&rgbValue];
-    
+
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
@@ -186,7 +189,7 @@
     if (!self.navigationItem.title) {
         self.navigationItem.title = @"加载中...";
     }
-    
+
     if (self.webView.canGoBack && [self.navigationItem.leftBarButtonItems count] == 1) {
         UIBarButtonItem *fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
         fixedSpaceButton.width = 20;
@@ -200,13 +203,13 @@
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    
+
     NSString *urlStr = [navigationAction.request.URL.absoluteString stringByRemovingPercentEncoding];
     if ([urlStr containsString:@"alipay://"] || [urlStr containsString:@"weixin://"]) {
         [[UIApplication sharedApplication] openURL:navigationAction.request.URL options:@{} completionHandler:^(BOOL success) {
         }];
     }
-    
+
     decisionHandler(WKNavigationActionPolicyAllow);
 }
 
@@ -221,16 +224,16 @@
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
     // 1. Get controller from transition context
     UIViewController *toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    
+
     //2. Set init frame for toVC
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
     CGRect finalFrame = [transitionContext finalFrameForViewController:toVC];
     toVC.view.frame = CGRectOffset(finalFrame, screenBounds.size.width, 0);
-    
+
     // 3. Add toVC's view to containerView
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:toVC.view];
-    
+
     // 4. Do animate now
     NSTimeInterval duration = [self transitionDuration:transitionContext];
     [UIView animateWithDuration:duration animations:^{
@@ -252,17 +255,17 @@
     // 1. Get controllers from transition context
     UIViewController *fromVC = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIViewController *toVC = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    
+
     // 2. Set init frame for fromVC
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
     CGRect initFrame = [transitionContext initialFrameForViewController:fromVC];
     CGRect finalFrame = CGRectOffset(initFrame, screenBounds.size.width, 0);
-    
+
     // 3. Add target view to the container, and move it to back
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:toVC.view];
     [containerView sendSubviewToBack:toVC.view];
-    
+
     // 4. Do animate now
     NSTimeInterval duration = [self transitionDuration:transitionContext];
     [UIView animateWithDuration:duration animations:^{
