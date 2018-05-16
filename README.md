@@ -1,41 +1,37 @@
 # cordova-plugin-native-webview
 
-As we all know, ionic app is a webview. If we want open a webview in ionic app. We have two ways:
-
-* Iframe
-* Open a native webview
-
-If iframe is very easy, but will meet some troubles that's not a good choose.
-
-Second option, cordova official suport a plugin: [cordova-plugin-inappbrowser](https://github.com/apache/cordova-plugin-inappbrowser). That is huge and complex plugin, furthermore that is extremely ugly.
-
-Now, [cordova-plugin-native-webview](https://github.com/daihere1993/cordova-plugin-native-webview) is here~~🎉🎉🎉
-
-
-## Purpose
-
-If you want open a webview in your cordova app. 
-
-This plugin is awesome.
-
-![image](https://github.com/daihere1993/cordova-plugin-native-webview/blob/master/doc/demo.gif)
+This plugin will open another native webview to nicely show your web resources inside of your app. At the save time, plugin suport a sharing feature, you can share website to wechat.
 
 ## Feature
 
+* Share to wechat
 * Nice navigationbar
 * WebView progress bar
+* Suport custom color.
 * Suport gesture(swap right to back).
-* Suport custom color. 
 
-## Useage
+## Example
 
-1. Add plugin to your project.
+![image](https://github.com/daihere1993/cordova-plugin-native-webview/blob/master/doc/demo.gif)
+
+
+## Install
 
 ```bash
 cordova plugin add https://github.com/daihere1993/cordova-plugin-native-webview
 ```
 
-2. Set some color in config.xml.
+## Dependencies
+
+If you want use sharing feature, you need add [cordova-plugin-wechat](https://github.com/xu-li/cordova-plugin-wechat).
+
+```bash
+cordova plugin add cordova-plugin-wechat --variable wechatappid=YOUR_WECHAT_APPID
+```
+
+## Configuration
+
+Configure plugin colors in config.xml
 
 ```xml
 <preference name="NativeWebViewNavBarColor" value="#ffffff" />
@@ -43,7 +39,17 @@ cordova plugin add https://github.com/daihere1993/cordova-plugin-native-webview
 <preference name="NativeWebViewIconButtonColor" value="#000" />
 ```
 
-3. Invoke ``NativeWebView.oepn(url)`` in js.
+## Useage
+
+```js
+/**
+ * url(String): web resouces url.
+ * enableShare(Boolean): Whether enable sharing.
+ * title(String): Webview title, if null, will get webview internal title.
+ * thumbImageUrl(String): Thumb image url for sharing wechat.
+ */
+NativeWebView.oepn(url, enableShare, { title: title, thumbImageUrl: thumbImageUrl });
+```
 
 ## LICENSE
 
