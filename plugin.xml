@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-native-webview" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="cordova-plugin-native-webview" version="2.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>cordova-plugin-native-webview</name>
     <js-module name="cordova-plugin-native-webview" src="www/cordova-plugin-native-webview.js">
         <clobbers target="NativeWebView" />
@@ -15,22 +15,64 @@
         <!-- Plugin source code -->
         <header-file src="src/ios/CDVNativeWebView.h" />
         <source-file src="src/ios/CDVNativeWebView.m" />
+        <!-- Icon resource -->
+        <resource-file src="src/ios/CDVShareIcon.xcassets" />
 
         <framework src="ionicons" type="podspec" spec="~>2.1.1"/>
     </platform>
 
     <platform name="android">
+    	<hook type="after_plugin_add" src="src/android/android-install.js" />
+        <hook type="after_plugin_install" src="src/android/android-install.js" />
+        <hook type="before_plugin_rm" src="src/android/android-install.js" />
+        <hook type="before_plugin_uninstall" src="src/android/android-install.js" />
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="CDVNativeWebView">
                 <param name="android-package" value="nativewebview.NativeWebView"/>
             </feature>
         </config-file>
 
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET"/>
+		<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+		<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+		<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+		<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        </config-file>
+
+	<config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity
+                android:name=".wxapi.WXEntryActivity"
+                android:label="@string/launcher_name"
+                android:exported="true">
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW"/>
+                    <category android:name="android.intent.category.DEFAULT"/>
+                    <data android:scheme="$WECHATAPPID"/>
+                </intent-filter>
+            </activity>
+        </config-file>
         <!-- Plugin source code -->
         <source-file src="src/android/NativeWebView.java" target-dir="src/nativewebview" />
         <source-file src="src/android/NativeWebViewDialog.java" target-dir="src/nativewebview" />
         <source-file src="src/android/NativeWebViewChromeClient.java" target-dir="src/nativewebview" />
+        <source-file src="src/android/Util.java" target-dir="src/nativewebview" />
         <!--  drawable src/android/resources -->
+        <resource-file src="src/android/res/drawable-hdpi/share.png" target="res/drawable-hdpi/share.png" />
+        <resource-file src="src/android/res/drawable-mdpi/share.png" target="res/drawable-mdpi/share.png" />
+        <resource-file src="src/android/res/drawable-xhdpi/share.png" target="res/drawable-xhdpi/share.png" />
+        <resource-file src="src/android/res/drawable-xxhdpi/share.png" target="res/drawable-xxhdpi/share.png" />
+
+         <resource-file src="src/android/res/drawable-hdpi/timeline.png" target="res/drawable-hdpi/timeline.png" />
+        <resource-file src="src/android/res/drawable-mdpi/timeline.png" target="res/drawable-mdpi/timeline.png" />
+        <resource-file src="src/android/res/drawable-xhdpi/timeline.png" target="res/drawable-xhdpi/timeline.png" />
+        <resource-file src="src/android/res/drawable-xxhdpi/timeline.png" target="res/drawable-xxhdpi/timeline.png" />
+
+         <resource-file src="src/android/res/drawable-hdpi/wechat.png" target="res/drawable-hdpi/wechat.png" />
+        <resource-file src="src/android/res/drawable-mdpi/wechat.png" target="res/drawable-mdpi/wechat.png" />
+        <resource-file src="src/android/res/drawable-xhdpi/wechat.png" target="res/drawable-xhdpi/wechat.png" />
+        <resource-file src="src/android/res/drawable-xxhdpi/wechat.png" target="res/drawable-xxhdpi/wechat.png" />
+
         <resource-file src="src/android/res/drawable-hdpi/arrow_left.png" target="res/drawable-hdpi/arrow_left.png" />
         <resource-file src="src/android/res/drawable-mdpi/arrow_left.png" target="res/drawable-mdpi/arrow_left.png" />
         <resource-file src="src/android/res/drawable-xhdpi/arrow_left.png" target="res/drawable-xhdpi/arrow_left.png" />
@@ -44,6 +86,11 @@
         <resource-file src="src/android/res/drawable/progress_bar_states.xml" target="res/drawable/progress_bar_states.xml"/>
         <resource-file src="src/android/res/anim/translate_in.xml" target="res/anim/translate_in.xml" />
         <resource-file src="src/android/res/anim/translate_out.xml" target="res/anim/translate_out.xml" />
+        <resource-file src="src/android/res/anim/share_in.xml" target="res/anim/share_in.xml" />
+        <resource-file src="src/android/res/anim/share_out.xml" target="res/anim/share_out.xml" />
+        <resource-file src="src/android/res/layout/bottom_dialog.xml" target="res/layout/bottom_dialog.xml" />
         <resource-file src="src/android/res/values/styles.xml" target="res/values/styles.xml" />
+
+        <framework src="src/android/NativeWebView.gradle" custom="true" type="gradleReference"/>
     </platform>
 </plugin>

@@ -6,12 +6,30 @@
 #import <Cordova/CDVPlugin.h>
 #import <WebKit/WebKit.h>
 
-@interface CDVNativeWebView : CDVPlugin <UIViewControllerTransitioningDelegate>
+@protocol CDVShareDelegate <NSObject>
+@property (nonatomic, strong) NSString *webviewTitle;
+- (void)shareToWechatFriend;
+- (void)shareToWechatTimeline;
+@end
+
+@interface CDVNativeWebView : CDVPlugin <UIViewControllerTransitioningDelegate, CDVShareDelegate>
+@property (nonatomic, strong) NSString *webviewTitle;
 - (void)open:(CDVInvokedUrlCommand *)command;
 @end
 
 @interface CDVNativeWebViewController : UIViewController <WKNavigationDelegate>
-- (id)initWithUrl:(NSString *)url  navBarColor:(NSString *)navBarColor progressBarColor:(NSString *)progressBarColor iconButtonColor:(NSString *)iconButtonColor;
+@property (nonatomic) BOOL enableShare;
+@property (nonatomic, strong) UIColor *navBarColor;
+@property (nonatomic, strong) UIColor *progressBarColor;
+@property (nonatomic, strong) UIColor *iconButtonColor;
+@property (nonatomic, weak) id<CDVShareDelegate> delegate;
+
+- (id)initWithUrl:(NSString *)url;
+- (void)start;
+@end
+
+@interface CDVNativeWebViewUtils : NSObject
++ (UIColor *)getColorByHexString:(NSString *)hexString;
 @end
 
 @interface PersentAnimation : NSObject <UIViewControllerAnimatedTransitioning>
