@@ -2,7 +2,7 @@
 
 This plugin will open another native webview to nicely show your web resources inside of your app. At the save time, plugin suport a sharing feature, you can share website to wechat.
 
-## Feature
+## Features
 
 * Share to wechat
 * Nice navigationbar
